@@ -187,7 +187,7 @@ Here are some example queries you can try:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/mini-data-query-engine.git
+   git clone https://github.com/RahulIB5/mini-data-query-simu-engine.git
    cd mini-data-query-engine
    ```
 
@@ -229,47 +229,70 @@ npm run test:integration
 
 ### Testing with Curl
 
+First, set your base URL as a variable:
+
+```bash
+# For local testing
+baseurl = http://localhost:3000
+
+# For the deployed version
+baseurl = https://mini-data-query-simu-engine.onrender.com
+```
+
 1. Register a user:
    ```bash
-   curl -X POST http://localhost:3000/api/auth/register \
+   curl -X POST ${baseurl}/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"username":"testuser","password":"password123"}'
    ```
 
 2. Login to get a token:
    ```bash
-   curl -X POST http://localhost:3000/api/auth/login \
+   curl -X POST ${baseurl}/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username":"testuser","password":"password123"}'
    ```
 
-3. Process a query:
+3. Store the token from the response:
    ```bash
-   curl -X POST http://localhost:3000/api/query \
+   token=YOUR_TOKEN_HERE
+   ```
+
+4. Process a query:
+   ```bash
+   curl -X POST ${baseurl}/api/query \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -H "Authorization: Bearer ${token}" \
      -d '{"query":"Show me sales from last month"}'
    ```
 
-4. Explain a query:
+5. Explain a query:
    ```bash
-   curl -X POST http://localhost:3000/api/explain \
+   curl -X POST ${baseurl}/api/explain \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -H "Authorization: Bearer ${token}" \
      -d '{"query":"What is our revenue in February?"}'
    ```
 
-5. Validate a query:
+6. Validate a query:
    ```bash
-   curl -X POST http://localhost:3000/api/validate \
+   curl -X POST ${baseurl}/api/validate \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -H "Authorization: Bearer ${token}" \
      -d '{"query":"How many laptops do we have in stock?"}'
+   ```
+
+7. Get database schema:
+   ```bash
+   curl -X GET ${baseurl}/api/schema \
+     -H "Authorization: Bearer ${token}"
    ```
 
 ## Deployment
 
 This application can be deployed to platforms like Render, Heroku, or Railway.
+
+This is on Render.
 
 ### Deploying to Render
 
