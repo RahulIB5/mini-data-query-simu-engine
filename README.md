@@ -227,9 +227,101 @@ npm run test:unit
 npm run test:integration
 ```
 
-### Testing with Curl
+### Testing with Curl (Local Development)
 
-First, set your base URL as a variable:
+1. Register a user:
+   ```bash
+   curl -X POST http://localhost:3000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"password123"}'
+   ```
+
+2. Login to get a token:
+   ```bash
+   curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"password123"}'
+   ```
+
+3. Process a query:
+   ```bash
+   curl -X POST http://localhost:3000/api/query \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"Show me sales from last month"}'
+   ```
+
+4. Explain a query:
+   ```bash
+   curl -X POST http://localhost:3000/api/explain \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"What is our revenue in February?"}'
+   ```
+
+5. Validate a query:
+   ```bash
+   curl -X POST http://localhost:3000/api/validate \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"How many laptops do we have in stock?"}'
+   ```
+
+6. Get database schema:
+   ```bash
+   curl -X GET http://localhost:3000/api/schema \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE"
+   ```
+
+### Testing with Curl (Render Deployment)
+
+1. Register a user:
+   ```bash
+   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"password123"}'
+   ```
+
+2. Login to get a token:
+   ```bash
+   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"testuser","password":"password123"}'
+   ```
+
+3. Process a query:
+   ```bash
+   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/query \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"Show me sales from last month"}'
+   ```
+
+4. Explain a query:
+   ```bash
+   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/explain \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"What is our revenue in February?"}'
+   ```
+
+5. Validate a query:
+   ```bash
+   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/validate \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     -d '{"query":"How many laptops do we have in stock?"}'
+   ```
+
+6. Get database schema:
+   ```bash
+   curl -X GET https://mini-data-query-simu-engine.onrender.com/api/schema \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE"
+   ```
+
+### Testing with Environment Variables
+
+For convenience, you can also use environment variables to make testing easier:
 
 ```bash
 # For local testing
@@ -237,56 +329,23 @@ baseurl = http://localhost:3000
 
 # For the deployed version
 baseurl = https://mini-data-query-simu-engine.onrender.com
+
+# Register a user
+curl -X POST ${baseurl}/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"password123"}'
+
+# Login and capture the token (requires jq)
+token=$(curl -s -X POST ${baseurl}/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"password123"}' | jq -r '.token')
+
+# Use the token for other requests
+curl -X POST ${baseurl}/api/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${token}" \
+  -d '{"query":"Show me sales from last month"}'
 ```
-
-1. Register a user:
-   ```bash
-   curl -X POST ${baseurl}/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
-   ```
-
-2. Login to get a token:
-   ```bash
-   curl -X POST ${baseurl}/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
-   ```
-
-3. Store the token from the response:
-   ```bash
-   token=YOUR_TOKEN_HERE
-   ```
-
-4. Process a query:
-   ```bash
-   curl -X POST ${baseurl}/api/query \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer ${token}" \
-     -d '{"query":"Show me sales from last month"}'
-   ```
-
-5. Explain a query:
-   ```bash
-   curl -X POST ${baseurl}/api/explain \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer ${token}" \
-     -d '{"query":"What is our revenue in February?"}'
-   ```
-
-6. Validate a query:
-   ```bash
-   curl -X POST ${baseurl}/api/validate \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer ${token}" \
-     -d '{"query":"How many laptops do we have in stock?"}'
-   ```
-
-7. Get database schema:
-   ```bash
-   curl -X GET ${baseurl}/api/schema \
-     -H "Authorization: Bearer ${token}"
-   ```
 
 ## Deployment
 
