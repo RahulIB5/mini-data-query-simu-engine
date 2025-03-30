@@ -227,125 +227,128 @@ npm run test:unit
 npm run test:integration
 ```
 
-### Testing with Curl (Local Development)
+## Testing with Postman
 
-1. Register a user:
-   ```bash
-   curl -X POST http://localhost:3000/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
+### Setting Up Postman
+
+1. Download and install [Postman](https://www.postman.com/downloads/)
+2. Create a new Collection named "Mini Data Query Engine"
+3. Set up environment variables:
+   - Create a new Environment (e.g., "Local" and "Production")
+   - Add variables:
+     - `baseUrl`: Set to `http://localhost:3000` for Local environment
+     - `baseUrl`: Set to `https://mini-data-query-simu-engine.onrender.com` for Production environment
+     - `token`: Leave this empty (will be populated after login)
+
+### Authentication Requests
+
+#### Register a User
+
+1. Create a new POST request
+2. URL: `{{baseUrl}}/api/auth/register`
+3. Headers: Add `Content-Type: application/json`
+4. Body: Select "raw" and "JSON", then enter:
+   ```json
+   {
+     "username": "testuser",
+     "password": "password123"
+   }
    ```
+5. Save the request as "Register User"
 
-2. Login to get a token:
-   ```bash
-   curl -X POST http://localhost:3000/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
+#### Login
+
+1. Create a new POST request
+2. URL: `{{baseUrl}}/api/auth/login`
+3. Headers: Add `Content-Type: application/json`
+4. Body: Select "raw" and "JSON", then enter:
+   ```json
+   {
+     "username": "testuser",
+     "password": "password123"
+   }
    ```
-
-3. Process a query:
-   ```bash
-   curl -X POST http://localhost:3000/api/query \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"Show me sales from last month"}'
+5. Tests: Add the following script to automatically save the token:
+   ```javascript
+   var jsonData = pm.response.json();
+   if (jsonData.token) {
+     pm.environment.set("token", jsonData.token);
+   }
    ```
+6. Save the request as "Login"
 
-4. Explain a query:
-   ```bash
-   curl -X POST http://localhost:3000/api/explain \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"What is our revenue in February?"}'
+### Query Processing Requests
+
+#### Process a Query
+
+1. Create a new POST request
+2. URL: `{{baseUrl}}/api/query`
+3. Headers:
+   - Add `Content-Type: application/json`
+   - Add `Authorization: Bearer {{token}}`
+4. Body: Select "raw" and "JSON", then enter:
+   ```json
+   {
+     "query": "Show me sales from last month"
+   }
    ```
+5. Save the request as "Process Query"
 
-5. Validate a query:
-   ```bash
-   curl -X POST http://localhost:3000/api/validate \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"How many laptops do we have in stock?"}'
+#### Explain a Query
+
+1. Create a new POST request
+2. URL: `{{baseUrl}}/api/explain`
+3. Headers:
+   - Add `Content-Type: application/json`
+   - Add `Authorization: Bearer {{token}}`
+4. Body: Select "raw" and "JSON", then enter:
+   ```json
+   {
+     "query": "What is our revenue in February?"
+   }
    ```
+5. Save the request as "Explain Query"
 
-6. Get database schema:
-   ```bash
-   curl -X GET http://localhost:3000/api/schema \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE"
+#### Validate a Query
+
+1. Create a new POST request
+2. URL: `{{baseUrl}}/api/validate`
+3. Headers:
+   - Add `Content-Type: application/json`
+   - Add `Authorization: Bearer {{token}}`
+4. Body: Select "raw" and "JSON", then enter:
+   ```json
+   {
+     "query": "How many laptops do we have in stock?"
+   }
    ```
+5. Save the request as "Validate Query"
 
-### Testing with Curl (Render Deployment)
+#### Get Database Schema
 
-1. Register a user:
-   ```bash
-   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
-   ```
+1. Create a new GET request
+2. URL: `{{baseUrl}}/api/schema`
+3. Headers:
+   - Add `Authorization: Bearer {{token}}`
+4. Save the request as "Get Schema"
 
-2. Login to get a token:
-   ```bash
-   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser","password":"password123"}'
-   ```
+### Running the Tests in Sequence
 
-3. Process a query:
-   ```bash
-   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/query \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"Show me sales from last month"}'
-   ```
+1. Select the "Local" or "Production" environment from the environment dropdown
+2. Run the "Register User" request first (only needed once)
+3. Run the "Login" request to populate the token variable
+4. Run any of the other requests as needed
 
-4. Explain a query:
-   ```bash
-   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/explain \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"What is our revenue in February?"}'
-   ```
+### Importing Collection
 
-5. Validate a query:
-   ```bash
-   curl -X POST https://mini-data-query-simu-engine.onrender.com/api/validate \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-     -d '{"query":"How many laptops do we have in stock?"}'
-   ```
+You can also export this collection as a JSON file and share it with your team. Here's how:
 
-6. Get database schema:
-   ```bash
-   curl -X GET https://mini-data-query-simu-engine.onrender.com/api/schema \
-     -H "Authorization: Bearer YOUR_TOKEN_HERE"
-   ```
+1. In Postman, click on the "..." menu next to your collection
+2. Select "Export"
+3. Choose Collection v2.1
+4. Save the JSON file
 
-### Testing with Environment Variables
-
-For convenience, you can also use environment variables to make testing easier:
-
-```bash
-# For local testing
-baseurl = http://localhost:3000
-
-# For the deployed version
-baseurl = https://mini-data-query-simu-engine.onrender.com
-
-# Register a user
-curl -X POST ${baseurl}/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"password123"}'
-
-# Login and capture the token (requires jq)
-token=$(curl -s -X POST ${baseurl}/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"password123"}' | jq -r '.token')
-
-# Use the token for other requests
-curl -X POST ${baseurl}/api/query \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ${token}" \
-  -d '{"query":"Show me sales from last month"}'
-```
+Others can import this file by clicking "Import" in their Postman and selecting your file.
 
 ## Deployment
 
